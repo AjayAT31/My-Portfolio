@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRUD Table</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <h1>Data Table</h1>
+
+    <!-- Form to add and update records -->
+    <form id="crudForm" align="center">
+        <fieldset>
+            <legend>Data Form</legend>
+        <input type="hidden" id="recordId" value="">
+        <label for="name">Name:</label>
+        <input type="text" id="name" required><br>
+        <label for="age">Age:</label>
+        <input type="number" id="age" required><br>
+        <label for="city">city:</label>
+        <input type="text" id="city" ><br>
+        <label for="email">Email:</label>
+        <input type="email" id="email" required><br>
+        <button type="submit">Add / Update</button>
+    </fieldset>
+    </form>
+
+    <!-- Display records in a table -->
+    <h2>Records</h2>
+    <table id="recordTable">
+        <thead>
+            <tr>
+                <th>Num</th>
+                <th>Name</th>
+                <th>Age</th>
+                <th>City</th>
+                <th>Email</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="recordList"></tbody>
+    </table>
+
+    <!-- JavaScript for CRUD operations -->
+    <script>
+        const form = document.getElementById("crudForm");
+        const recordId = document.getElementById("recordId");
+        const nameInput = document.getElementById("name");
+        const ageInput = document.getElementById("age");
+        const cityInput = document.getElementById("city");
+        const emailInput = document.getElementById("email");
+        const recordList = document.getElementById("recordList");
+        const recordTable = document.getElementById("recordTable");
+
+        let records = [];
+
+        form.addEventListener("submit", function (e) {
+            e.preventDefault();
+
+            const id = recordId.value;
+            const name = nameInput.value;
+            const age = ageInput.value;
+            const city = cityInput.value;
+            const email = emailInput.value;
+
+            if (id) {
+                // Update an existing record
+                const index = records.findIndex((record) => record.id === id);
+                if (index !== -1) {
+                    records[index].id = id;
+                    records[index].name = name;
+                    records[index].age = age;
+                    records[index].city = city;
+                    records[index].email = email;
+                }
+            } else {
+                // Add a new record
+                const newRecord = {
+                    id: Date.now().toString(),
+                    name,
+                    age,
+                    city,
+                    email,
+                };
+                records.push(newRecord);
+            }
+
+            // Clear the form
+            recordId.value = "";
+            nameInput.value = "";
+            ageInput.value = "";
+            cityInput.value = "";
+            emailInput.value = "";
+
+            // Refresh the record table
+            displayRecords();
+        });
+
+        function displayRecords() {
+            recordList.innerHTML = "";
+            records.forEach((record) => {
+                const row = document.createElement("tr");
+                row.innerHTML = `
+                    <td>${record.num}</td>    
+                    <td>${record.name}</td>
+                    <td>${record.age}</td>
+                    <td>${record.city}</td>
+                    <td>${record.email}</td>
+                    <td>
+                        <button onclick="editRecord('${record.id}')">Edit</button>
+                        <button onclick="deleteRecord('${record.id}')">Delete</button>
+                    </td>
+                `;
+                recordList.appendChild(row);
+            });
+        }
+
+        function editRecord(id) {
+            const record = records.find((record) => record.id === id);
+            if (record) {
+                recordId.value = record.id;
+                numInput.value = record.num;
+                nameInput.value = record.name;
+                ageInput.value = record.age;
+                cityInput.value = record.city;
+                emailInput.value = record.email;
+            }
+        }
+
+        function deleteRecord(id) {
+            const index = records.findIndex((record) => record.id === id);
+            if (index !== -1) {
+                records.splice(index, 1);
+                displayRecords();
+            }
+        }
+
+        // Initial display of records
+        displayRecords();
+    </script>
+</body>
+</html>
